@@ -79,9 +79,38 @@ const ReqForm = () => {
             });
     };
 
-    useEffect(() => {
+    async function updateGiftInventoryData(id, quantity) {
+        let msg = JSON.stringify({
+            "dataSource": "Singapore-free-cluster",
+            "database": "crsWorkflow",
+            "collection": "giftsInventory",
+            "filter": { "giftId": id },
+            "update": {
+                "$set": {
+                    "quantity": quantity,
+                }
+            }
+        });
 
-    }, []);
+        let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: 'https://ap-southeast-1.aws.data.mongodb-api.com/app/data-gqwih/endpoint/data/v1/action/updateMany',
+            headers: {
+                'Authorization': 'Bearer ' + accessToken,
+                'Content-Type': 'application/json'
+            },
+            data: msg
+        };
+
+        await axios.request(config)
+            .then((response) => {
+                setGiftInventoryData(response.data.documents)
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
 
     const [formData, setFormData] = useState({
         requestId: state ? state.requestId : params.id,
@@ -175,7 +204,6 @@ const ReqForm = () => {
     };
 
     const handleApproverSelectChange = (index) => (value, event) => {
-        console.log(event);
         setFormData({ ...formData, [`approverName`]: event.value });
     };
 
@@ -288,8 +316,17 @@ const ReqForm = () => {
                 requestDate: formData.requestDate,
                 assignee: formData.assignee,
                 comment: null
+            });
+        });
+        formData.giftDetails.map((value, index) => {
+            let quantity = 0;
+            giftInventoryData.map((data)=>{
+                    if(data.giftId === value.giftId){
+                        quantity = data.quantity - value.quantity;
+                    }
             })
-        })
+            updateGiftInventoryData(value.giftId,quantity);
+        });
     };
 
     const insertRequest = (data) => {
@@ -353,6 +390,7 @@ const ReqForm = () => {
 
     useEffect(() => {
         if (formData.requestStatus != null) {
+            fetchGiftInventoryData();
             if (params.action === 'add') {
                 insertRequest(formData);
             } else {

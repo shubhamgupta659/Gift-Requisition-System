@@ -233,6 +233,7 @@ const SelectDrop = (props) => {
     const [selectedDropValue, setSelectedDropValue] = useState();
     const [confirmLoading, setConfirmLoading] = useState(false);
     const formRef = useRef();
+    const [giftInventoryData, setGiftInventoryData] = useState(null);
     const [formData, setFormData] = useState({
         requestId: null,
         commentId: null,
@@ -243,6 +244,70 @@ const SelectDrop = (props) => {
         commentDate: null,
         attachment: null
     });
+
+    async function fetchGiftInventoryData() {
+        let msg = JSON.stringify({
+            "dataSource": "Singapore-free-cluster",
+            "database": "crsWorkflow",
+            "collection": "giftsInventory",
+        });
+
+        let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: 'https://ap-southeast-1.aws.data.mongodb-api.com/app/data-gqwih/endpoint/data/v1/action/find',
+            headers: {
+                'Authorization': 'Bearer ' + props.accessToken,
+                'Content-Type': 'application/json'
+            },
+            data: msg
+        };
+
+        await axios.request(config)
+            .then((response) => {
+                setGiftInventoryData(response.data.documents);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
+    useEffect(() => {
+        fetchGiftInventoryData();
+    }, []);
+
+    async function updateGiftInventoryData(id, quantity) {
+        let msg = JSON.stringify({
+            "dataSource": "Singapore-free-cluster",
+            "database": "crsWorkflow",
+            "collection": "giftsInventory",
+            "filter": { "giftId": id },
+            "update": {
+                "$set": {
+                    "quantity": quantity,
+                }
+            }
+        });
+
+        let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: 'https://ap-southeast-1.aws.data.mongodb-api.com/app/data-gqwih/endpoint/data/v1/action/updateMany',
+            headers: {
+                'Authorization': 'Bearer ' + props.accessToken,
+                'Content-Type': 'application/json'
+            },
+            data: msg
+        };
+
+        await axios.request(config)
+            .then((response) => {
+                setGiftInventoryData(response.data.documents)
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
 
     async function insertComments(data) {
         let msg = JSON.stringify({
@@ -301,6 +366,17 @@ const SelectDrop = (props) => {
 
         await axios.request(config)
             .then((response) => {
+                if(data.requestStatus==='Rejected' || data.requestStatus==='Not Gifted'){
+                    props.casedata.giftDetails.map((value, index) => {
+                        let quantity = 0;
+                        giftInventoryData.map((ele)=>{
+                                if(ele.giftId === value.giftId){
+                                    quantity = Number(ele.quantity) + Number(value.quantity);
+                                }
+                        })
+                        updateGiftInventoryData(value.giftId,quantity);
+                    });
+                }
                 navigate(`/${props.stage}`);
             })
             .catch((error) => {
@@ -312,7 +388,7 @@ const SelectDrop = (props) => {
         if (formData.commentMsg != null) {
             insertComments(formData);
         }
-    }, [formData]);
+    }, [formData,giftInventoryData]);
 
     const s1ActionOptions = [
         { value: 'Item Gifted', label: 'Gift Item' },

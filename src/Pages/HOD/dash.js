@@ -48,7 +48,7 @@ const HodDash = () => {
 
     useEffect(() => {
         fetchDashData();
-    }, postResult);
+    }, []);
 
     const columns = useMemo(
         () => [

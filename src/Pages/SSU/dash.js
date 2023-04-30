@@ -48,7 +48,7 @@ const SsuDash = () => {
 
     useEffect(() => {
         fetchDashData();
-    }, postResult);
+    }, []);
 
     const columns = useMemo(
         () => [

@@ -99,7 +99,7 @@ function ReqStatusPane({ parentData,stage }) {
                                         <Row align="middle" gutter={[10, 0]}>
                                             <Col className='card-content-container' xs={3}>
                                                 <div className='card-title-container'>
-                                                    <div className='card-icon-container'>{c._id.requestStatus === 'Draft' ? <DraftsIcon /> : c._id.requestStatus === 'Pending' ? <FileOpenIcon /> : c._id.requestStatus === 'Re-Assign' ? <AssignmentIndIcon /> : c._id.requestStatus === 'Escalated' ? <EscalatorIcon /> : c._id.requestStatus === 'Temp CFF' ? < DeleteIcon /> : c._id.requestStatus === 'CFF' ? < RuleFolderIcon /> : <ArchiveIcon />}</div>
+                                                    <div className='card-icon-container'>{c._id.requestStatus === 'Draft' ? <DraftsIcon /> : c._id.requestStatus === 'Pending' ? <FileOpenIcon /> : c._id.requestStatus === 'Issue Item' ? <AssignmentIndIcon /> : c._id.requestStatus === 'Item Issued' ? <EscalatorIcon /> : c._id.requestStatus === 'Rejected' ? < DeleteIcon /> : c._id.requestStatus === 'Item Gifted' ? < RuleFolderIcon /> : <ArchiveIcon />}</div>
                                                     <div className="icon-box">{c._id.requestStatus}</div>
                                                 </div>
                                                 <div className='box-line'><hr></hr></div>
