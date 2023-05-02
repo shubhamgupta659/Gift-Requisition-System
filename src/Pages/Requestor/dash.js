@@ -10,7 +10,7 @@ import {
   Tooltip,
   IconButton,
 } from '@mui/material';
-import { Edit, RemoveRedEye } from '@mui/icons-material';
+import { Edit, RemoveRedEye, BorderColor } from '@mui/icons-material';
 import axios from 'axios';
 import { AuthContext } from '../../AuthContext';
 import ReqStatusPane from '../ReqStatusPane';
@@ -99,6 +99,11 @@ function ReqDash() {
             size: 50,
           },
           {
+            accessorKey: 'requestorName', //accessorKey used to define `data` column. `id` gets set to accessorKey automatically
+            header: 'Requestor Name',
+            size: 50,
+          },
+          {
             accessorKey: 'requestStatus', //accessorKey used to define `data` column. `id` gets set to accessorKey automatically
             header: 'Request Status',
             size: 100,
@@ -176,7 +181,7 @@ function ReqDash() {
           enablePinning
           enableRowSelection={false}
           enableSelectAll={false}
-          initialState={{ showColumnFilters: true, density: 'compact', columnVisibility: { Select: false, requestId: false, eventLocation: false, eventDate: false, eventDescription: false, requestDate: false, comment: false } }}
+          initialState={{ showColumnFilters: true, density: 'compact', columnVisibility: { Select: false, requestId: false, eventLocation: false, eventDate: false, eventDescription: false, requestDate: false, comment: false, requestorName: false } }}
           positionToolbarAlertBanner='bottom'
           renderRowActions={({ row, table }) => (
             <Box sx={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
@@ -215,6 +220,12 @@ const ActionButton = (props) => {
       </IconButton>
     </Tooltip>
     );
+  } else if (props.row.requestStatus === 'Item Issued') {
+    return (<Tooltip arrow placement='left' title='Action'>
+      <IconButton onClick={() => onViewClick(props.row)}>
+        <BorderColor />
+      </IconButton>
+    </Tooltip>);
   } else {
     return (<Tooltip arrow placement='left' title='View'>
       <IconButton onClick={() => onViewClick(props.row)}>

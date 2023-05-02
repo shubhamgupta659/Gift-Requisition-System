@@ -412,7 +412,7 @@ const SelectDrop = (props) => {
                 "requestStatus": values.requestStatus,
                 "commentMsg": values.commentMsg,
                 "attachment": values.attachment,
-                "assignedBy": props.stage === 'reqDash' ? 'Requester' : props.stage === 'hodDash' ? 'HOD' : 'SSU',
+                "assignedBy": props.stage === 'reqDash' ? 'Requestor' : props.stage === 'hodDash' ? 'HOD' : 'SSU',
                 "commentDate": moment(),
             });
         });
@@ -483,7 +483,7 @@ const SelectDrop = (props) => {
                     rules={[
                         {
                             required: true,
-                            message: 'Please enter the address',
+                            message: 'Please enter the comment',
                         },
                     ]}
                 >

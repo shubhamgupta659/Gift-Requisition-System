@@ -1,9 +1,9 @@
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import React, { useState, useRef, useEffect, useContext } from 'react';
-import { Form, Input, Select, DatePicker, Button, Tooltip, Collapse, InputNumber, Modal, Space, Table, Tag } from 'antd';
+import { Form, Input, Select, DatePicker, Button, Tooltip, Collapse, InputNumber, Modal, Upload, Table } from 'antd';
 import axios from 'axios';
 import moment from "moment";
-import { RollbackOutlined } from '@ant-design/icons';
+import { RollbackOutlined, UploadOutlined } from '@ant-design/icons';
 import { AuthContext } from "../../AuthContext";
 const { Panel } = Collapse;
 const { TextArea } = Input;
@@ -13,6 +13,7 @@ const { Search } = Input;
 const ReqForm = () => {
     const { accessToken } = useContext(AuthContext);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [fileList, setFileList] = useState([]);
     const navigate = useNavigate();
     const { state } = useLocation();
     const params = useParams();
@@ -21,6 +22,23 @@ const ReqForm = () => {
     const itemOptions = [];
     const [giftInventoryData, setGiftInventoryData] = useState(null);
     const [itemOptionUS, setItemOptionUS] = useState([]);
+
+    const props = {
+        name: 'attachment',
+        onRemove: (file) => {
+            const index = fileList.indexOf(file);
+            const newFileList = fileList.slice();
+            newFileList.splice(index, 1);
+            setFileList(newFileList);
+        },
+        beforeUpload: (file) => {
+            setFileList([...fileList, file]);
+            setFormData({ ...formData, [`attachment`]: file });
+            return false;
+        },
+        fileList,
+    };
+
     async function fetchItemsData(category) {
         let msg = JSON.stringify({
             "dataSource": "Singapore-free-cluster",
@@ -128,12 +146,13 @@ const ReqForm = () => {
         eventDate: state ? state.eventDate : null,
         eventLocation: state ? state.eventLocation : null,
         eventDescription: state ? state.eventDescription : null,
-        attachment: state ? state.attachment : null,
+        attachment: null,
         approverName: state ? state.approverName : null,
         requestStatus: null,
         requestStatusId: null,
         requestDate: moment(),
-        assignee: 'Requester',
+        requestorName: 'Req User',
+        assignee: 'Requestor',
         comment: null
     });
 
@@ -144,9 +163,7 @@ const ReqForm = () => {
     ];
 
     const approverOptions = [
-        { value: 'Approver 1', label: 'Approver 1' },
-        { value: 'Approver 2', label: 'Approver 2' },
-        { value: 'Approver 3', label: 'Approver 3' }
+        { value: 'HOD User', label: 'HOD User' },
     ];
 
     const handleOk = () => {
@@ -287,11 +304,12 @@ const ReqForm = () => {
                 eventDate: values.eventDate,
                 eventLocation: values.eventLocation,
                 eventDescription: values.eventDescription,
-                attachment: null,
+                attachment: fileList,
                 approverName: values.approverName,
                 requestStatus: 'Draft',
                 requestStatusId: 1,
                 requestDate: formData.requestDate,
+                requestorName: formData.requestorName,
                 assignee: formData.assignee,
                 comment: null
             })
@@ -309,23 +327,24 @@ const ReqForm = () => {
                 eventDate: values.eventDate,
                 eventLocation: values.eventLocation,
                 eventDescription: values.eventDescription,
-                attachment: null,
+                attachment: fileList,
                 approverName: values.approverName,
                 requestStatus: 'Pending',
                 requestStatusId: 2,
                 requestDate: formData.requestDate,
+                requestorName: formData.requestorName,
                 assignee: formData.assignee,
                 comment: null
             });
         });
         formData.giftDetails.map((value, index) => {
             let quantity = 0;
-            giftInventoryData.map((data)=>{
-                    if(data.giftId === value.giftId){
-                        quantity = data.quantity - value.quantity;
-                    }
+            giftInventoryData.map((data) => {
+                if (data.giftId === value.giftId) {
+                    quantity = data.quantity - value.quantity;
+                }
             })
-            updateGiftInventoryData(value.giftId,quantity);
+            updateGiftInventoryData(value.giftId, quantity);
         });
     };
 
@@ -389,8 +408,11 @@ const ReqForm = () => {
     };
 
     useEffect(() => {
+        fetchGiftInventoryData();
+    }, []);
+
+    useEffect(() => {
         if (formData.requestStatus != null) {
-            fetchGiftInventoryData();
             if (params.action === 'add') {
                 insertRequest(formData);
             } else {
@@ -475,7 +497,6 @@ const ReqForm = () => {
                                             initialValue={field.quantity}
                                         ><InputNumber
                                                 name="quantity"
-                                                defaultValue="1"
                                                 min="0"
                                                 max="100"
                                                 step="1"
@@ -550,6 +571,21 @@ const ReqForm = () => {
                                 ]}
                             >
                                 <TextArea name="eventDescription" rows={4} />
+                            </Form.Item>
+                            <Form.Item
+                                label="Attachemnt"
+                                name={`attachment`}
+                                initialValue={formData.attachment}
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'Please upload the attchment',
+                                    },
+                                ]}
+                            >
+                                <Upload {...props}>
+                                    <Button icon={<UploadOutlined />}>Click to Upload</Button>
+                                </Upload>
                             </Form.Item>
                         </Panel>
                         <Panel header="Approver Details" key="4">

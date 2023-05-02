@@ -9,21 +9,19 @@ import {
     Tooltip,
     IconButton,
 } from '@mui/material';
-import { RemoveRedEye } from '@mui/icons-material';
+import { RemoveRedEye, BorderColor } from '@mui/icons-material';
 import axios from 'axios';
 import { AuthContext } from '../../AuthContext';
 import ReqStatusPane from '../ReqStatusPane';
 
 const SsuDash = () => {
     const { accessToken } = useContext(AuthContext);
-    const navigate = useNavigate();
     const [postResult, setPostResult] = useState(null);
     async function fetchDashData() {
         let msg = JSON.stringify({
             "dataSource": "Singapore-free-cluster",
             "database": "crsWorkflow",
             "collection": "requests",
-            "filter": { "requestStatus": { "$in": ["Issue Item"] } },
         });
 
         let config = {
@@ -98,6 +96,11 @@ const SsuDash = () => {
                         size: 50,
                     },
                     {
+                        accessorKey: 'requestorName', //accessorKey used to define `data` column. `id` gets set to accessorKey automatically
+                        header: 'Requestor Name',
+                        size: 50,
+                    },
+                    {
                         accessorKey: 'requestStatus', //accessorKey used to define `data` column. `id` gets set to accessorKey automatically
                         header: 'Request Status',
                         size: 100,
@@ -148,12 +151,6 @@ const SsuDash = () => {
         [],
     );
 
-
-    const onViewClick = (row) => {
-        navigate(`/reqview/ssuDash/${row.original.requestId}`, { state: row.original });
-    };
-
-
     return (
         <div>
             <div><ReqStatusPane parentData={postResult} stage='ssuDash' /></div>
@@ -176,15 +173,11 @@ const SsuDash = () => {
                     enablePinning
                     enableRowSelection={false}
                     enableSelectAll={false}
-                    initialState={{ showColumnFilters: true, density: 'compact', columnVisibility: { Select: false, requestId: false, eventLocation: false, eventDate: false, eventDescription: false, requestDate: false, comment: false } }}
+                    initialState={{ showColumnFilters: true, density: 'compact', columnVisibility: { Select: false, requestId: false, eventLocation: false, eventDate: false, eventDescription: false, requestDate: false, comment: false, requestorName: false } }}
                     positionToolbarAlertBanner='bottom'
                     renderRowActions={({ row, table }) => (
                         <Box sx={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-                            <Tooltip arrow placement='left' title='View'>
-                                <IconButton onClick={() => onViewClick(row)}>
-                                    <RemoveRedEye />
-                                </IconButton>
-                            </Tooltip>
+                            <ActionButton row={row.original} />
                         </Box>
                     )}
                 />
@@ -193,5 +186,26 @@ const SsuDash = () => {
 
     );
 };
+
+const ActionButton = (props) => {
+    const navigate = useNavigate();
+    const onViewClick = (row) => {
+        navigate(`/reqview/ssuDash/${props.row.requestId}`, { state: props.row });
+    };
+
+    if (props.row.requestStatus === 'Issue Item') {
+        return (<Tooltip arrow placement='left' title='Action'>
+            <IconButton onClick={() => onViewClick(props.row)}>
+                <BorderColor />
+            </IconButton>
+        </Tooltip>);
+    } else {
+        return (<Tooltip arrow placement='left' title='View'>
+            <IconButton onClick={() => onViewClick(props.row)}>
+                <RemoveRedEye />
+            </IconButton>
+        </Tooltip>);
+    }
+}
 
 export default SsuDash;
