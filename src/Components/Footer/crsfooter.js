@@ -8,22 +8,22 @@ function CRSFooter() {
           <p className="footer__title"><h2>Corporate Requisition System</h2></p>
           <div className="footer__links">
             <p>Contact us at 
-              <a href="mailto:helpdesk@mas.gov.sg" class="footer__link"><span>&nbsp;</span>helpdesk@mas.gov.sg</a>
+              <a href="mailto:helpdesk@agc.gov.sg" class="footer__link"><span>&nbsp;</span>helpdesk@agc.gov.sg</a>
             </p>
           </div>
         </div>
         <div className="footer__bottom-section">
           <div className="footer__links">
-            <a className="footer__link" href="https://tech.gov.sg/report_vulnerability" target="_blank" rel="noreferrer">Report Vulnerability
+            <a className="footer__link" href="https://www.agc.gov.sg/privacy-statement" target="_blank" rel="noreferrer">Privacy Statement
             <LinkOutlined />
             </a>
-            <a className="footer__link" href="https://www.mas.gov.sg/privacy-statement" target="_blank" rel="noreferrer">Privacy Statement
+            <a className="footer__link" href="https://www.agc.gov.sg/terms-of-use" target="_blank" rel="noreferrer">Terms of Use
             <LinkOutlined />
             </a>
-            <a className="footer__link" href="https://www.mas.gov.sg/terms-of-use" target="_blank" rel="noreferrer">Terms of Use
+            <a className="footer__link" href="https://www.agc.gov.sg/rate-this-website" target="_blank" rel="noreferrer">Rate this Website
             <LinkOutlined />
             </a>
-            <a className="footer__link" href="https://www.mas.gov.sg/terms-of-use" target="_blank" rel="noreferrer">Reach
+            <a className="footer__link" href="https://www.reach.gov.sg/" target="_blank" rel="noreferrer">Reach
             <LinkOutlined />
             </a>
           </div>
