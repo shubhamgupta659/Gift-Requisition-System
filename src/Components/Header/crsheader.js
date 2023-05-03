@@ -41,7 +41,7 @@ function CRSHeader() {
 
 function UserName(props) {
   const navigate = useNavigate();
-
+  const location = useLocation();
   const logoutClickHandler = () => {
     navigate(`/login`);
   }
@@ -58,7 +58,7 @@ function UserName(props) {
     },
 
   ];
-  if (props.username !== '')
+  if (!(location.pathname === '/' || location.pathname === '/login'))
     return (
       <div className='right-nav'>
         <div className='settings-icon'>

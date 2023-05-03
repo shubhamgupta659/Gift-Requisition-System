@@ -576,12 +576,6 @@ const ReqForm = () => {
                                 label="Attachemnt"
                                 name={`attachment`}
                                 initialValue={formData.attachment}
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Please upload the attchment',
-                                    },
-                                ]}
                             >
                                 <Upload {...props}>
                                     <Button icon={<UploadOutlined />}>Click to Upload</Button>
